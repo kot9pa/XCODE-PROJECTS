@@ -51,6 +51,20 @@ class ExpressionEditorViewController: UITableViewController, UITextFieldDelegate
         return true
     }
     
+    // MARK: - Show alert for empty name
+    
+    func handleUnnamedFace() {
+        let alert = UIAlertController(title: "Warning!", message: "A face must have a name", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+            self.nameTextField.text = alert.textFields?.first?.text
+            if !self.name.isEmpty {
+                self.performSegue(withIdentifier: "Add Emotion", sender: nil)
+            }
+        }))
+        alert.addTextField(configurationHandler: nil)
+        present(alert, animated: true, completion: nil)
+    }
+    
     // MARK: - Fix FaceView size
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -67,6 +81,15 @@ class ExpressionEditorViewController: UITableViewController, UITextFieldDelegate
         if segue.identifier == "Embed Face" {
             faceViewController = segue.destination as? BlinkingFaceViewController
             faceViewController?.expression = expression
+        }
+    }
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if identifier == "Add Emotion", name.isEmpty {
+            handleUnnamedFace()
+            return false
+        } else {
+            return super.shouldPerformSegue(withIdentifier: identifier, sender: sender)
         }
     }
     
